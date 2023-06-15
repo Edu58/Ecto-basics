@@ -1,6 +1,7 @@
 defmodule Learnecto.User do
   use Ecto.Schema
-  alias Learnecto.{Bookmark, Tag, LinkTag}
+  import Ecto.Changeset
+  alias Learnecto.{Bookmark, Tag, LinkTag, User}
 
   schema "users" do
     field :email, :string
@@ -12,5 +13,13 @@ defmodule Learnecto.User do
     many_to_many :tagged_linked, Tag, join_through: LinkTag
 
     timestamps()
+  end
+
+  def changeset(%User{} = user, attrs) do
+    user
+    |> cast(attrs, [:username, :email, :about])
+    |> validate_required([:username, :email])
+    |> validate_length(:username, min: 3)
+    |> unique_constraint([:username, :email])
   end
 end
